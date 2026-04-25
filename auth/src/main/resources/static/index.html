@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Autenticación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .card-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            padding: 10px 30px;
+            border-radius: 25px;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 10px 30px;
+            margin: 0 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: rgba(255,255,255,0.2);
+        }
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .form-container {
+            display: none;
+        }
+        .form-container.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0">Sistema de Autenticación</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Tabs -->
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="showTab('login')">Iniciar Sesión</button>
+                            <button class="tab-btn" onclick="showTab('register')">Registrarse</button>
+                        </div>
+
+                        <!-- Alert Container -->
+                        <div id="alertContainer"></div>
+
+                        <!-- Login Form -->
+                        <div id="loginForm" class="form-container active">
+                            <h4 class="text-center mb-4">Iniciar Sesión</h4>
+                            <form onsubmit="login(event)">
+                                <div class="mb-3">
+                                    <label for="loginEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="loginEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="loginPassword" class="form-label">Contraseña</label>
+                                    <input type="password" class="form-control" id="loginPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                            </form>
+                        </div>
+
+                        <!-- Register Form -->
+                        <div id="registerForm" class="form-container">
+                            <h4 class="text-center mb-4">Registrarse</h4>
+                            <form onsubmit="register(event)">
+                                <div class="mb-3">
+                                    <label for="registerCedula" class="form-label">Cédula</label>
+                                    <input type="text" class="form-control" id="registerCedula" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerNombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="registerNombre" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="registerEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerPassword" class="form-label">Contraseña</label>
+                                    <input type="password" class="form-control" id="registerPassword" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerEdad" class="form-label">Edad</label>
+                                    <input type="number" class="form-control" id="registerEdad" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerTelefono" class="form-label">Teléfono</label>
+                                    <input type="text" class="form-control" id="registerTelefono" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerRole" class="form-label">Rol</label>
+                                    <select class="form-control" id="registerRole" required>
+                                        <option value="">Seleccionar rol</option>
+                                        <option value="USER">Usuario</option>
+                                        <option value="ADMIN">Administrador</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+                            </form>
+                        </div>
+
+                        <!-- User Info (Hidden by default) -->
+                        <div id="userInfo" class="form-container">
+                            <div class="text-center">
+                                <h4>¡Bienvenido!</h4>
+                                <div id="userDetails" class="mt-3"></div>
+                                <button class="btn btn-secondary mt-3" onclick="logout()">Cerrar Sesión</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api/ecommerce/usuarios';
+        let currentUser = null;
+
+        function showTab(tab) {
+            // Hide all forms
+            document.querySelectorAll('.form-container').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.add('active');
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            } else if (tab === 'register') {
+                document.getElementById('registerForm').classList.add('active');
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            }
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                const alert = alertContainer.querySelector('.alert');
+                if (alert) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        async function login(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentUser = data.usuario;
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.usuario));
+                    
+                    showAlert('¡Login exitoso! Redirigiendo...', 'success');
+                    
+                    setTimeout(() => {
+                        document.querySelectorAll('.form-container').forEach(form => {
+                            form.classList.remove('active');
+                        });
+                        document.getElementById('userInfo').classList.add('active');
+                        document.querySelectorAll('.tab-btn').forEach(btn => {
+                            btn.style.display = 'none';
+                        });
+                        
+                        document.getElementById('userDetails').innerHTML = `
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">      ${data.usuario.nombre}</h5>
+                                    <p class="card-text">
+                                        <strong>Email:</strong> ${data.usuario.email}<br>
+                                        <strong>Rol:</strong> ${data.usuario.role}<br>
+                                        <strong>Token:</strong> <small class="text-muted">${data.token.substring(0, 50)}...</small>
+                                    </p>
+                                </div>
+                            </div>
+                        `;
+                    }, 1500);
+                } else {
+                    showAlert(data.mensaje || 'Error en el login', 'danger');
+                }
+            } catch (error) {
+                showAlert('Error de conexión: ' + error.message, 'danger');
+            }
+        }
+
+        async function register(event) {
+            event.preventDefault();
+            
+            const userData = {
+                cedula: document.getElementById('registerCedula').value,
+                nombre: document.getElementById('registerNombre').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value,
+                edad: parseInt(document.getElementById('registerEdad').value),
+                telefono: document.getElementById('registerTelefono').value,
+                role: document.getElementById('registerRole').value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/guardar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('¡Usuario registrado exitosamente! Ahora puedes iniciar sesión.', 'success');
+                    
+                    // Clear form and switch to login
+                    document.getElementById('registerForm').querySelector('form').reset();
+                    setTimeout(() => {
+                        showTab('login');
+                    }, 2000);
+                } else {
+                    showAlert('Error al registrar usuario', 'danger');
+                }
+            } catch (error) {
+                showAlert('Error de conexión: ' + error.message, 'danger');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            currentUser = null;
+            
+            // Reset to login view
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.style.display = 'block';
+            });
+            showTab('login');
+            
+            showAlert('Sesión cerrada correctamente', 'info');
+        }
+
+        // Check if user is already logged in
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (token && user) {
+                currentUser = JSON.parse(user);
+                document.querySelectorAll('.form-container').forEach(form => {
+                    form.classList.remove('active');
+                });
+                document.getElementById('userInfo').classList.add('active');
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.style.display = 'none';
+                });
+                
+                document.getElementById('userDetails').innerHTML = `
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">👤 ${currentUser.nombre}</h5>
+                            <p class="card-text">
+                                <strong>Email:</strong> ${currentUser.email}<br>
+                                <strong>Rol:</strong> ${currentUser.role}<br>
+                                <strong>Token:</strong> <small class="text-muted">${token.substring(0, 50)}...</small>
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
