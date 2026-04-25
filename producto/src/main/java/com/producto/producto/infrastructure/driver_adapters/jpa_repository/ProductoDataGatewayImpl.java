@@ -37,7 +37,7 @@ public class ProductoDataGatewayImpl implements ProductoGateWay {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         existente.setNombre(producto.getNombre());
         existente.setPrecio(producto.getPrecio());
-        existente.setDescripcion(producto.getDescripcion()); // ✔️ corregido
+        existente.setDescripcion(producto.getDescripcion());
         existente.setStock(producto.getStock());
 
         ProductoData actualizado = repository.save(existente);

@@ -30,7 +30,7 @@ public class ProductoController {
     private final ProductoMapper productoMapper;
 
     @PostMapping("/guardar")
-    public ResponseEntity<?> guardarProducto(@RequestBody ProductoData productoData) {
+    public ResponseEntity<?> guardarProducto(@RequestBody ProductoData productoData) { //request sirve para pasar de json a objeto
         try {
 
             Producto producto = productoUseCase.guardarProducto(
@@ -51,7 +51,7 @@ public class ProductoController {
     }
 
     @GetMapping("/Productos/{productoId}")
-    public ResponseEntity<Producto> obtenerProductoPorId(@PathVariable Integer productoId) {
+    public ResponseEntity<Producto> obtenerProductoPorId(@PathVariable Integer productoId) { //path captura los datos que pasamos por url
         Producto producto = productoUseCase.buscarProductoPorId(productoId);
         return new ResponseEntity<>(producto, HttpStatus.OK);
     }

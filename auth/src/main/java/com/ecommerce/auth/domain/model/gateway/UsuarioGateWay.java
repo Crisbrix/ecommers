@@ -7,4 +7,5 @@ public interface UsuarioGateWay{
     void eliminarUsuarioPorCedula(String cedula);
     Usuario actualizarUsuario(String cedula, Usuario usuario);
     Usuario buscarPorEmail(String email);
+
 }
